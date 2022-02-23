@@ -1,0 +1,18 @@
+services:
+  program:
+    container_name: program
+    build: .
+    volumes:
+      - ./sol-stream-program:/code/sol-stream-program
+
+  backend:
+    container_name: backend
+    build: .
+    volumes:
+      - ./sol-stream-backend:/code/sol-stream-backend
+
+  frontend:
+    container_name: frontend
+    build: .
+    volumes:
+      - ./sol-stream-frontend:/code/sol-stream-frontend
