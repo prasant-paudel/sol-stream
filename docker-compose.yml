@@ -1,18 +1,43 @@
 services:
-  program:
-    container_name: program
+  localnet: 
     build: .
+    ports:
+      - 8899:8899
+    command: solana-test-validator
+    
+  program:
+    build: .
+    container_name: program
     volumes:
       - ./sol-stream-program:/code/sol-stream-program
+    ports:
+      - 8000:8000
+    working_dir: /code/sol-stream-program
+    entrypoint: bash
+    command: solana airdrop 100 && solana deploy --keypair keypair.json dist/program/sol_stream_program.so --url https://127.0.0.1:8899
+    depends_on:
+      - localnet
 
   backend:
-    container_name: backend
     build: .
+    container_name: backend
     volumes:
       - ./sol-stream-backend:/code/sol-stream-backend
+    ports:
+      - 8000:8000
+    working_dir: /code/sol-stream-backend
+    entrypoint: bash
+    command: cargo run
+    depends_on:
+      - program
 
   frontend:
-    container_name: frontend
     build: .
+    container_name: frontend
     volumes:
       - ./sol-stream-frontend:/code/sol-stream-frontend
+    ports:
+      - 3000:3000
+    working_dir: /code/sol-stream-frontend
+    command: serve -s build
+
